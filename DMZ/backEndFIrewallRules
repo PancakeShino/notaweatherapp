@@ -1,9 +1,0 @@
-sudo ufw enable
-
-sudo ufw allow from <our ips> to any port 5672
-
-sudo ufw allow from <our ips> to any port 15672
-
-sudo ufw default deny incoming
-
-sudo ufw default allow outgoing:
