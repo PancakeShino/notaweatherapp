@@ -3,7 +3,7 @@
 <?php 
 $username = "dom"; 
 $password = "Aviator@1337"; 
-$dsn = 'mysql:host=localhost;dbname=login';
+$dsn = 'mysql:host=10.243.45.150;dbname=login';
 
 // Define your SQL query
 $query = "SELECT user_id, username, password FROM users";
