@@ -6,16 +6,13 @@ require_once 'testRabbitMQClient.php';
 $username = trim($_POST["username"]);
 $password = trim($_POST["password"]);
 
-$hashed_password = password_hash($password, PASSWORD_DEFAULT);
-
-
 $data = [
 	'username' => $username,
-	'password' => $hashed_password,
+	'password' => $password,
 ];
 
-$exchange = 'registration_exchange';
-$queue = 'registration_queue';
+$exchange = 'IT490_exchange';
+$queue = 'Registration';
 
 $channel->queue_declare($queue, false, true, false, false);
 $channel->exchange_declare($exchange, 'direct', false, true, false);
