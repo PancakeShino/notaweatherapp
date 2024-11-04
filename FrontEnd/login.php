@@ -50,5 +50,9 @@
         <input type="submit" value="Login">
     </form>
 
+    <!-- Link to registration page -->
+    <a href="register.html">Link</a>
+    
+
 </body>
 </html>
