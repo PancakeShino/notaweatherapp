@@ -49,4 +49,6 @@ else
     echo "Login failed. Please check your credentials." . PHP_EOL;
 }
 
+unset($client);
+
 echo $argv[0]." END".PHP_EOL;
