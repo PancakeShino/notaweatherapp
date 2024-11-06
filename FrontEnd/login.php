@@ -3,42 +3,77 @@
 <head>
     <title>Andrew's Sample</title>
 </head>
-
 <body>
     <h1>Andrew's Sample</h1>
-    <p>This is a test website to learn how to use Apache2 in my IT490 project.</p>
-    
+    <p>Apache2 in my IT490 project.</p>
+
     <div id="textResponse">
         <?php
-        if ($_SERVER["REQUEST_METHOD"] == "POST")
+        session_start();
+
+        if ($_SERVER["REQUEST_METHOD"] == "POST") 
         {
             if (!empty($_POST['username']) && !empty($_POST['password']))
             {
-                $username = $_POST['username'];
-                $password = $_POST['password'];
+                $username = escapeshellarg($_POST['username']);
+                $password = escapeshellarg($_POST['password']);
 
-                $output = [];
-                $return_var = 0;
+                $command = "php ../RabbitMQ/testRabbitMQClient.php $username $password";
 
-                //Replace authentication with RabbitMQ
-                exec("php ../RabbitMQ/testRabbitMQClient.php $username $password", $output, $return_var);
-                
-                echo implode("\n", $output);
+                $descriptorspec = [
+                    1 => ["pipe", "w"],  
+                    2 => ["pipe", "w"] 
+                ];
 
-                if ($return_var === 0)
+                $process = proc_open($command, $descriptorspec, $pipes);
+
+                if (is_resource($process))
                 {
-                    echo "Login request send seccssfully.";
+                    $timeout = 2;
+                    $start = time();
+                    $outputText = '';
+
+                    stream_set_blocking($pipes[1], false);
+                    while (time() - $start < $timeout) 
+                    {
+                        $outputText .= stream_get_contents($pipes[1]);
+                        if (feof($pipes[1])) 
+                        {
+                            break;
+                        }
+                        usleep(100000);
+                    }
+
+                    fclose($pipes[1]);
+                    fclose($pipes[2]);
+
+                    $status = proc_get_status($process);
+                    if ($status['running'] == true) 
+                    {
+                        proc_terminate($process);
+                    }
+
+                    proc_close($process);
+
+                    if (strpos($outputText, 'Login successful') !== false) 
+                    {
+                        header("Location: success.html");
+                        exit();
+                    } 
+                    else 
+                    {
+                        echo "<p>Login failed. Please check your credentials.</p>";
+                    }
                 } 
                 else 
                 {
-                    echo "Failed to send login request";
+                    echo "<p>Error: Could not start login process.</p>";
                 }
             } 
-            else 
+            else
             {
-                echo "Please fill in both username and password.";
+                echo "<p>Please fill in both username and password.</p>";
             }
-            //End of authentication section with RabbitMQ (Modify this space, DONT REMOVE THESE COMMENTS)
         }
         ?>
     </div>
