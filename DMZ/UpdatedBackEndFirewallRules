@@ -1,0 +1,27 @@
+#!/bin/bash
+
+sudo ufw --force reset
+
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+
+sudo ufw enable
+
+sudo ufw allow proto tcp from 10.243.232.158 to any port 80    # HTTP
+sudo ufw allow proto tcp from 10.243.232.158 to any port 443   # HTTPS
+sudo ufw allow proto tcp from 10.243.232.158 to any port 5672  # RabbitMQ AMQP
+sudo ufw allow proto tcp from 10.243.232.158 to any port 15672 # RabbitMQ GUI
+
+sudo ufw allow proto tcp from 10.243.45.150 to any port 80    # HTTP
+sudo ufw allow proto tcp from 10.243.45.150 to any port 443   # HTTPS
+sudo ufw allow proto tcp from 10.243.45.150 to any port 3306   # MySQL
+sudo ufw allow proto tcp from 10.243.45.150 to any port 5672  # RabbitMQ AMQP
+sudo ufw allow proto tcp from 10.243.45.150 to any port 15672 # RabbitMQ GUI
+
+sudo ufw deny in on any
+
+
+sudo ufw logging on
+
+
+sudo ufw status verbose
