@@ -1,11 +1,12 @@
 #prereqs apt-get install curl gcc libssl-dev libnl-3-dev libnl-genl-3-dev libsnmp-dev
 #apt-get install keepalived
 #GOES IN /etc/keepalived/keepalived.conf
+#create same file in backup machine but change state to BACKUP
 
 vrrp_instance VI_1 {
     state MASTER            # "BACKUP" on the backup machine
     interface eth0          # Network interface for the VIP
-    virtual_router_id 51
+    virtual_router_id 20
     priority 101            # Lower priority on the backup machine eg 100
     advert_int 1
 
