@@ -3,7 +3,7 @@
 #GOES IN /etc/keepalived/keepalived.conf
 #create same file in backup machine but change state to BACKUP
 
-vrrp_instance VI_1 {
+vrrp_instance VI_BACKEND {
     state MASTER            # "BACKUP" on the backup machine
     interface eth0          # Network interface for the VIP
     virtual_router_id 20
