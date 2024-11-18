@@ -6,7 +6,7 @@
 vrrp_instance VI_BACKEND {
     state MASTER            # "BACKUP" on the backup machine
     interface eth0          # Network interface for the VIP
-    virtual_router_id 20
+    virtual_router_id 69
     priority 101            # Lower priority on the backup machine eg 100
     advert_int 1
 
