@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Andrew's Sample</title>
+    <title>Nick's Sample</title>
 </head>
 
 <body>
-    <h1>Andrew's Sample</h1>
-    <p>This is a test website to learn how to use Apache2 in my IT490 project.</p>
-    
-    <div id="textResponse">
+    <main>
+        <!-- Nick Malefyt. IT 490 10/26/2024 -->
+<header>
+<!--Setlist.fm here if we do that as out project API KEY: pEhpqLvlgcuitpMIPpAjWU-iqFQbnVUiKKKr -->    
+
+<div id="textResponse">
         <?php
         if ($_SERVER["REQUEST_METHOD"] == "POST")
         {
@@ -43,6 +45,22 @@
         ?>
     </div>
 
+<div class="topnav">
+    <br>
+    <p>
+      <a href="home.php">Home</a>
+      <br>
+      <a href="login.php">Login</a>
+      <br>
+      <a href="register.html">Register</a>
+    </p>
+        </div>
+</header>    <h1>Login Page</h1>
+    <p>Welcome! Please login below.</p>
+<!-- Add header and footer eventually. -->
+    <div id="textResponse">
+            </div>
+
     <!-- Login form -->
     <form action="login.php" method="POST">
         <input type="text" name="username" placeholder="Username" required>
@@ -52,7 +70,7 @@
 
     <!-- Link to registration page -->
     <a href="register.html">Link</a>
-    
+    </main>
 
 </body>
 </html>
