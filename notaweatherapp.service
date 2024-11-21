@@ -1,0 +1,11 @@
+[Unit]
+Description=notaweatherapp
+After=network.target
+
+[Service]
+ExecStart=PATH TO NOTAWEATHERAPP
+Restart=on-failure
+User=your_user
+
+[Install]
+WantedBy=multi-user.target
