@@ -1,4 +1,5 @@
 <?php
+/*
 require_once 'testRabbitMQClient.php';
 require_once 'dombase.php'; // Database connection file
 
@@ -39,3 +40,4 @@ while ($channel->is_consuming()) {
 $channel->close();
 $conn->close();
 ?>
+*/

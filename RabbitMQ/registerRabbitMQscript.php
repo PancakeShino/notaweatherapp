@@ -1,4 +1,5 @@
 <?php
+/*
 require_once 'testRabbitMQClient.php';
 
 use PhpAmqpLib\Message\AMQPMessage;
@@ -40,4 +41,6 @@ while ($channel->is_consuming()) {
 
 $channel->close();
 $conn->close();
+ */
 ?>
+
