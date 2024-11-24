@@ -1,0 +1,46 @@
+version: "3.9"
+services:
+  dmz_dev:
+    image: wazuh/wazuh:4.2.5
+    container_name: dmz_dev
+    environment:
+      - ELASTICSEARCH_HOST=elasticsearch
+    ports:
+      - "1514:1514/udp"
+      - "55000:55000"
+    volumes:
+      - ./wazuh_logs:/var/ossec/logs
+    networks:
+      - dev_network
+
+  dmz_qa:
+    image: wazuh/wazuh:4.2.5
+    container_name: dmz_qa
+    environment:
+      - ELASTICSEARCH_HOST=elasticsearch
+    ports:
+      - "1514:1514/udp"
+      - "55000:55000"
+    volumes:
+      - ./wazuh_logs:/var/ossec/logs
+    networks:
+      - qa_network
+
+  dmz_prod:
+    image: wazuh/wazuh:4.2.5
+    container_name: dmz_prod
+    environment:
+      - ELASTICSEARCH_HOST=elasticsearch
+    ports:
+      - "1514:1514/udp"
+      - "55000:55000"
+    volumes:
+      - ./wazuh_logs:/var/ossec/logs
+    networks:
+      - prod_network
+
+networks:
+  dev_network:
+  qa_network:
+  prod_network:
+       
