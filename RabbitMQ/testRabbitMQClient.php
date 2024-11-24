@@ -1,10 +1,18 @@
 #!/usr/bin/php
 <?php
+<<<<<<< HEAD
 require_once('ComponentsofRabbitClient/path.inc');
 require_once('ComponentsofRabbitClient/get_host_info.inc');
 require_once('ComponentsofRabbitClient/rabbitMQLib.inc');
 
 $client = new rabbitMQClient("testRabbitMQ.ini","notaweatherapp");
+=======
+require_once('/ComponentsofRabbitClient/path.inc');
+require_once('/ComponentsofRabbitClient/get_host_info.inc');
+require_once('/ComponentsofRabbitClient/rabbitMQLib.inc');
+
+$client = new rabbitMQClient("testRabbitMQ.ini","testServer");
+>>>>>>> 26247c39a6a644b4f70738d5e592b41719062489
 
 if (isset($argv[1]) && isset($argv[2]))
 {
@@ -29,11 +37,18 @@ $response = $client->send_request($request);
 echo "Client received response: ".PHP_EOL;
 print_r($response);
 echo "\n\n";
+<<<<<<< HEAD
 echo PHP_EOL;
 
 if (isset($response['session_id']))
 {
     $sessionId = $response['session_id'];
+=======
+
+if ($response === true)
+{
+    $sessionId = $_SESSION['session_id'];
+>>>>>>> 26247c39a6a644b4f70738d5e592b41719062489
     echo "Login successful! Session ID: " . $sessionId . PHP_EOL; 
 
     $validateRequest = array();
@@ -49,6 +64,10 @@ else
     echo "Login failed. Please check your credentials." . PHP_EOL;
 }
 
+<<<<<<< HEAD
 unset($client);
 
 echo $argv[0]." END".PHP_EOL;
+=======
+echo $argv[0]." END".PHP_EOL;
+>>>>>>> 26247c39a6a644b4f70738d5e592b41719062489
