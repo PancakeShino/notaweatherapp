@@ -1,6 +1,7 @@
 <?php
 require_once 'testRabbitMQClient.php';
-require_once 'dombase.php';
+
+use PhpAmqpLib\Message\AMQPMessage;
 
 $channel->queue_declare('Registration', false, true, false, false);
 
@@ -32,6 +33,7 @@ $callback = function($msg) use ($conn) {
 
 $channel->basic_consume('Registration', '', false, false, false, false, $callback);
 
+echo "Waiting for login requests...\n";
 while ($channel->is_consuming()) {
     $channel->wait();
 }
