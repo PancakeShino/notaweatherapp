@@ -1,10 +1,10 @@
 #!/usr/bin/php
 <?php
-require_once('../ComponentsofRabbitClient/path.inc');
-require_once('../ComponentsofRabbitClient/get_host_info.inc');
-require_once('/..ComponentsofRabbitClient/rabbitMQLib.inc');
+require_once('ComponentsofRabbitClient/path.inc');
+require_once('ComponentsofRabbitClient/get_host_info.inc');
+require_once('ComponentsofRabbitClient/rabbitMQLib.inc');
 
-$client = new rabbitMQClient("testRabbitMQ.ini","testServer");
+$client = new rabbitMQClient("testRabbitMQ.ini","notaweatherapp");
 
 if (isset($argv[1]) && isset($argv[2]))
 {
@@ -23,16 +23,17 @@ $request['username'] = $username;
 $request['password'] = $password;
 $request['message'] = "Requesting login";
 
-$response = $client->send_request($request);
+$response = $client->send_request($request); // sends request to RabbitMQServer.php
 //$response = $client->publish($request);
 
 echo "Client received response: ".PHP_EOL;
 print_r($response);
 echo "\n\n";
+echo PHP_EOL;
 
-if ($response === true)
+if (isset($response['session_id']))
 {
-    $sessionId = $_SESSION['session_id'];
+    $sessionId = $response['session_id'];
     echo "Login successful! Session ID: " . $sessionId . PHP_EOL; 
 
     $validateRequest = array();
@@ -45,7 +46,8 @@ if ($response === true)
 }
 else
 {
-    echo "Login failed. Please check your credentials." . PHP_EOL;
+    echo "Failed to receive session ID." . PHP_EOL;
 }
 
 echo $argv[0]." END".PHP_EOL;
+?>
