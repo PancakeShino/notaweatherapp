@@ -1,0 +1,4 @@
+sudo ufw allow from 172.28.245.79 to 172.28.109.248 port 5672 proto tcp
+sudo ufw allow from 172.28.245.79 to 172.28.109.248 port 80,443 proto tcp
+sudo ufw allow from 172.28.30.37 to 172.28.109.248 port 80,443 proto tcp
+sudo ufw deny in to 172.28.109.248
