@@ -10,8 +10,8 @@ sudo ufw enable
 sudo ufw allow proto tcp from any to any port 80
 sudo ufw allow proto tcp from any to any port 443
 
-sudo ufw allow proto tcp from any to 10.243.109.248 port 5672
-sudo ufw allow proto tcp from any to 10.243.109.248 port 15672
+sudo ufw allow proto tcp from any to 10.243.120.72 port 5672
+sudo ufw allow proto tcp from any to 10.243.120.72 port 15672
 
 sudo ufw deny in on any
 sudo ufw logging on
