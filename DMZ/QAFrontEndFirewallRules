@@ -1,8 +1,17 @@
 sudo ufw default deny incoming
 sudo ufw default allow outgoing
 
-sudo ufw allow in proto tcp fron any to any port 443
+sudo ufw allow in proto tcp from any to any port 443
 sudo ufw allow in proto tcp from any to any port 80
+
+sudo ufw allow in proto tcp from 10.244.81.48 to any port 443
+sudo ufw allow out proto tcp to 10.244.81.48 to any port 443
+
+sudo ufw allow in proto tcp from 10.244.81.48 to any port 5672
+sudo ufw allow out proto tcp to 10.244.81.48 to any port 5672
+
+sudo ufw allow in proto tcp from 10.244.81.48 to any port 15672
+sudo ufw allow out proto tcp to 10.244.81.48 to any port 15672
 
 sudo ufw allow proto tcp from any to 172.28.245.79 port 5672
 sudo ufw allow proto tcp from any to 172.28.245.79 port 15672
