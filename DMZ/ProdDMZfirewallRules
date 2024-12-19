@@ -1,0 +1,4 @@
+sudo ufw allow from 10.244.55.134 to 10.244.206.67 port 5672 proto tcp
+sudo ufw allow from 10.244.55.134 to 10.244.206.67 port 80,443 proto tcp
+sudo ufw allow from 10.244.81.48 to 10.244.206.67 port 80,443 proto tcp
+sudo ufw deny in to 10.244.206.67
