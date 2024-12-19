@@ -45,7 +45,7 @@
 
                                     if (is_resource($process)) 
                                     {
-                                        $timeout = 5;
+                                        $timeout = 10;
                                         $start = time();
                                         $outputText = '';
                                         stream_set_blocking($pipes[1], false);
@@ -56,7 +56,7 @@
                                             if (feof($pipes[1])) 
                                             { break; }
                                             usleep(100000);
-                                        }
+                                        } 
 
                                         fclose($pipes[1]);
                                         fclose($pipes[2]);
@@ -68,7 +68,6 @@
                                             proc_terminate($process);
                                         }
                                         proc_close($process);
-
                                         
                                         if (strpos($outputText, 'Login successful') !== false) {
                                             preg_match('/Session ID: (\w+)/', $outputText, $matches);
@@ -77,9 +76,15 @@
                                                 $_SESSION['validLogin'] = true;
                                                 $_SESSION['username'] = $_POST['username'];
                                             }
-                                            echo "<div class='alert alert-success'>Login successful! Welcome, " . htmlspecialchars($_SESSION['username']) . ".</div>";
+                                            echo "<div class='alert alert-success'>Login successful! Welcome, " . htmlspecialchars($_SESSION['username']) . ". Redirecting you home...</div>";
+
+                                            echo "<script>
+                                            setTimeout(function() {
+                                                window.location.href = 'home.php';
+                                            }, 3000);
+                                          </script>";
                                         } else {
-                                            echo "<div class='alert alert-danger'>Login failed. Please check your credentials and try again.</div>";
+                                            echo "<div class='alert alert-danger'>Login failed. oopsie! Please check your credentials and try again.</div>";
                                         }
                                     }
                                 } else {
@@ -99,7 +104,7 @@
                                 <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" required>
                             </div>
                             <div class="d-grid">
-                                <button type="submit" class="btn btn-primary">Login</button>
+                                <button type="submit" class="btn btn-info text-white">Login</button>
                             </div>
                         </form>
                     </div>
@@ -108,6 +113,8 @@
         </div>
     </main>
 
+    <?php include('footer.php'); ?>
+    
     <!-- Bootstrap JS -->
     <script src="js/bootstrap.bundle.min.js"></script>
 </body>

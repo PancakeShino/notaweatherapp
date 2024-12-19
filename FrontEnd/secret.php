@@ -16,8 +16,10 @@ if (!isset($_SESSION['validLogin']) || !$_SESSION['validLogin'] || !isset($_SESS
 <body>
     <?php include('header.php'); ?>
     <main class="container mt-5">
-        <h1>hello welcome to secret page ;P</h1>
-        <p>Hello, <?php echo htmlspecialchars($_SESSION['username']); ?>!</p>
+        <h1>Welcome to the secret page ;P</h1>
+        <h2>Hello, <?php echo htmlspecialchars($_SESSION['username']); ?>!</h2>
     </main>
+
+    <?php include('footer.php'); ?>
 </body>
 </html>

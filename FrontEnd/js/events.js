@@ -1,7 +1,8 @@
 const apiKey = 'pEhpqLvlgcuitpMIPpAjWU-iqFQbnVUiKKKr';
 const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-const baseUrl = 'https://api.setlist.fm/rest/1.0';
-let mapInstance = null;
+const setlistBaseUrl = 'https://api.setlist.fm/rest/1.0';
+const ticketmasterAPI = '9H7vRCdxa8GagYxTmeV6FuAeFjLuJGXY';
+const ticketmasterURL = 'https://app.ticketmaster.com/discovery/v2';
 
 async function fetchArtistEvents() {
     const artistName = document.getElementById('artist-input').value.trim();
@@ -15,8 +16,84 @@ async function fetchArtistEvents() {
     eventListContainer.innerHTML = `<p>Loading...</p>`;
 
     try {
-        // fetches artist data
-        const artistAPI = `${baseUrl}/search/artists?artistName=${encodeURIComponent(artistName)}&p=1`;
+        const upcomingEventsHtml = await fetchUpcomingEvents(artistName);
+        const pastEventsHtml = await fetchPastEvents(artistName);
+
+        eventListContainer.innerHTML = `
+            <div>
+                <h3>Upcoming Events</h3>
+                ${upcomingEventsHtml || '<p>No upcoming events found.</p>'}
+            </div>
+            <hr>
+            <div>
+                <h3>Past Events</h3>
+                ${pastEventsHtml || '<p>No past events found.</p>'}
+            </div>
+        `;
+
+        // Add event listeners for "View on Map" buttons
+        const mapButtons = document.querySelectorAll('.view-map-btn');
+        mapButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const lat = parseFloat(this.getAttribute('data-lat'));
+                const long = parseFloat(this.getAttribute('data-long'));
+                const venueName = this.getAttribute('data-venue');
+                const cityName = this.getAttribute('data-city');
+
+                if (!isNaN(lat) && !isNaN(long)) {
+                    openMapPopup(lat, long, venueName, cityName);
+                } else {
+                    alert('Location data is missing or invalid.');
+                }
+            });
+        });
+    } catch (error) {
+        eventListContainer.innerHTML = `<p>Error fetching data: ${error.message}</p>`;
+        console.error(error);
+    }
+}
+
+async function fetchUpcomingEvents(artistName) {
+    try {
+        const url = `${ticketmasterURL}/events.json?keyword=${encodeURIComponent(artistName)}&apikey=${ticketmasterAPI}`;
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error(`Failed to fetch upcoming events: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+
+        if (!data._embedded || !data._embedded.events || data._embedded.events.length === 0) {
+            return `<p>No upcoming events found for "${artistName}".</p>`;
+        }
+
+        return data._embedded.events
+            .map(event => {
+                const venue = event._embedded.venues[0];
+                const eventDate = new Date(event.dates.start.dateTime || event.dates.start.localDate);
+                const country = venue.country ? venue.country.name : 'Unknown Country';
+                const state = venue.state && venue.state.name && country === 'United States of America' ? venue.state.name : '';
+
+                return `
+                    <div class="event">
+                        <strong>${event.name}</strong><br>
+                        ${venue.name} - ${venue.city.name}${state ? `, ${state}` : ''}, ${country}<br>
+                        <i>${eventDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</i><br>
+                        <a href="${event.url}" target="_blank" class="btn btn-sm btn-primary">Buy Tickets Now</a><br><br>
+                    </div>
+                `;
+            })
+            .join('');
+    } catch (error) {
+        console.error(error);
+        return `<p>Error fetching upcoming events: ${error.message}</p>`;
+    }
+}
+
+async function fetchPastEvents(artistName) {
+    try {
+        const artistAPI = `${setlistBaseUrl}/search/artists?artistName=${encodeURIComponent(artistName)}&p=1`;
         const artistResponse = await fetch(`${proxyUrl}${artistAPI}`, {
             headers: {
                 'x-api-key': apiKey,
@@ -29,20 +106,16 @@ async function fetchArtistEvents() {
         }
 
         const artistData = await artistResponse.json();
-
         if (!artistData.artist || artistData.artist.length === 0) {
-            eventListContainer.innerHTML = `<p>No artist found with the name "${artistName}".</p>`;
-            return;
+            return `<p>No artist found with the name "${artistName}".</p>`;
         }
 
         const artist = artistData.artist.find(a => a.name.toLowerCase() === artistName.toLowerCase());
         if (!artist) {
-            eventListContainer.innerHTML = `<p>No exact match found for "${artistName}".</p>`;
-            return;
+            return `<p>No exact match found for "${artistName}".</p>`;
         }
 
-        // upcoming events
-        const eventsAPI = `${baseUrl}/artist/${artist.mbid}/setlists`;
+        const eventsAPI = `${setlistBaseUrl}/artist/${artist.mbid}/setlists`;
         const eventsResponse = await fetch(`${proxyUrl}${eventsAPI}`, {
             headers: {
                 'x-api-key': apiKey,
@@ -51,58 +124,44 @@ async function fetchArtistEvents() {
         });
 
         if (!eventsResponse.ok) {
-            throw new Error(`Failed to fetch events: ${eventsResponse.statusText}`);
+            throw new Error(`Failed to fetch past events: ${eventsResponse.statusText}`);
         }
 
         const eventsData = await eventsResponse.json();
-
         if (!eventsData.setlist || eventsData.setlist.length === 0) {
-            eventListContainer.innerHTML = `<p>No upcoming events found for "${artist.name}".</p>`;
-            return;
+            return `<p>No past events found for "${artist.name}".</p>`;
         }
 
-        // displays events
-        const eventsHtml = eventsData.setlist.map(event => `
-            <div class="event" data-lat="${event.venue.city.coords.lat}" data-long="${event.venue.city.coords.long}" data-venue="${event.venue.name}" data-city="${event.venue.city.name}">
-                <p><strong>${event.venue.name}</strong> - ${event.venue.city.name}</p>
-                <p>${event.eventDate}</p>
-                <button class="view-map-btn">View on Map</button>
-            </div>
-        `).join('');
-        eventListContainer.innerHTML = eventsHtml;
+        return eventsData.setlist
+            .map(event => {
+                const venue = event.venue;
+                const city = venue.city;
+                const date = new Date(event.eventDate.split('-').reverse().join('-'));
 
-        document.querySelectorAll('.view-map-btn').forEach(button => {
-            button.addEventListener('click', function () {
-                const parent = this.parentElement;
-                const lat = parent.dataset.lat;
-                const long = parent.dataset.long;
-                const venue = parent.dataset.venue;
-                const city = parent.dataset.city;
+                const formattedDate = new Intl.DateTimeFormat('en-US', {
+                    month: 'long',
+                    day: 'numeric',
+                    year: 'numeric',
+                }).format(date);
 
-                displayMap(lat, long, venue, city);
-            });
-        });
+                return `
+                    <div class="event">
+                        <strong>${venue.name}</strong><br>
+                        ${city.name}${city.state ? `, ${city.state}` : ''}<br>
+                        <i>${formattedDate}</i><br>
+                        <button class="view-map-btn btn btn-sm btn-primary"
+                            data-lat="${city.coords.lat}"
+                            data-long="${city.coords.long}"
+                            data-venue="${venue.name}"
+                            data-city="${city.name}">View on Map</button>
+                    </div><br>
+                `;
+            })
+            .join('');
     } catch (error) {
-        eventListContainer.innerHTML = `<p>Error fetching data: ${error.message}</p>`;
         console.error(error);
+        return `<p>Error fetching past events: ${error.message}</p>`;
     }
-}
-
-function displayMap(lat, long, venueName, cityName) {
-    if (mapInstance) {
-        mapInstance.remove();
-    }
-
-    mapInstance = L.map('map').setView([lat, long], 13);
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-    }).addTo(mapInstance);
-
-    L.marker([lat, long])
-        .addTo(mapInstance)
-        .bindPopup(`<b>${venueName}</b><br>${cityName}`)
-        .openPopup();
 }
 
 document.getElementById('search-btn').addEventListener('click', fetchArtistEvents);

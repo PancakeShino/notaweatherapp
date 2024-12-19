@@ -24,11 +24,9 @@ function doLogin($username, $password)
     $stmt->bind_result($stored_password);
     $stmt->fetch();
 
-    // Debugging
     echo "Stored password hash: $stored_password" . PHP_EOL;
     echo "User entered password: $password" . PHP_EOL;
 
-    // Check password
     if (password_verify($password, $stored_password)) {
         echo "Password verified successfully!" . PHP_EOL;
 
@@ -88,19 +86,17 @@ function storeSessionInDatabase($username, $sessionId, $expiresAt)
         return array("returnCode" => '1', 'message' => "Database connection failed.");
     }
     
-    // Correct the column name by using backticks
     $stmt = $mysqli->prepare("INSERT INTO sessions (session_id, username, `expires_at`) VALUES (?, ?, ?)");
     
-    // Bind parameters: session_id, username, expires_at
     $stmt->bind_param("sss", $sessionId, $username, $expiresAt);
 
-    // Execute the statement
     if ($stmt->execute()) {
         return array("returnCode" => '0', 'message' => "Session stored successfully.");
     } else {
         return array("returnCode" => '1', 'message' => "Error storing session: " . $stmt->error);
     }
 }
+
 
 function requestProcessor($request)
 {
@@ -116,7 +112,11 @@ function requestProcessor($request)
     case "Login":
         return doLogin($request['username'], $request['password']);
     case "Registration":
-        return doRegister($request['username'], $request['password']);
+        return doRegister($request['username'], $request['password']);    
+    case "toggle_follow_artist":
+        return toggleFollowArtist($request['username'], $request['artist_id']); 
+    case "get_followed_artists":
+        return getFollowedArtists($request['username']);
     case "validate_session":
 	    if (validateSession($request['session_id']))
 	    {
@@ -142,6 +142,80 @@ function validateSession($sessionId)
     return $stmt->num_rows > 0;
 }
 
+function getFollowedArtists($username)
+{
+    $mysqli = new mysqli("10.243.120.72", "notaweatherapp", "1234", "IT490");
+
+    if ($mysqli->connect_error) {
+        return array("success" => false, "message" => "Database connection failed.");
+    }
+
+    // Get user ID from username
+    $stmt = $mysqli->prepare("SELECT id FROM Users WHERE username = ?");
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $user = $result->fetch_assoc();
+    
+    if (!$user) {
+        return array("success" => false, "message" => "User not found");
+    }
+
+    // Fetch followed artists
+    $stmt = $mysqli->prepare("SELECT artist_id FROM followed_artists WHERE user_id = ?");
+    $stmt->bind_param("i", $user['id']);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $artistIds = [];
+    while ($row = $result->fetch_assoc()) {
+        $artistIds[] = $row['artist_id'];
+    }
+
+    return array("success" => true, "artists" => $artistIds);
+}
+
+
+function toggleFollowArtist($username, $artistId) {
+    $mysqli = new mysqli("10.243.120.72", "notaweatherapp", "1234", "IT490");
+    
+    if ($mysqli->connect_error) {
+        return array("success" => false, "message" => "Database connection failed");
+    }
+
+    // Get user_id from username
+    $stmt = $mysqli->prepare("SELECT id FROM Users WHERE username = ?");
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $user = $result->fetch_assoc();
+    
+    if (!$user) {
+        return array("success" => false, "message" => "User not found");
+    }
+
+    // Check if already following
+    $stmt = $mysqli->prepare("SELECT id FROM followed_artists WHERE user_id = ? AND artist_id = ?");
+    $stmt->bind_param("is", $user['id'], $artistId);
+    $stmt->execute();
+    $stmt->store_result();
+    
+    if ($stmt->num_rows > 0) {
+        // Unfollow
+        $stmt = $mysqli->prepare("DELETE FROM followed_artists WHERE user_id = ? AND artist_id = ?");
+        $stmt->bind_param("is", $user['id'], $artistId);
+        $success = $stmt->execute();
+        return array("success" => $success, "message" => $success ? "Unfollowed successfully" : "Error unfollowing", "following" => false);
+    } else {
+        // Follow
+        $stmt = $mysqli->prepare("INSERT INTO followed_artists (user_id, artist_id) VALUES (?, ?)");
+        $stmt->bind_param("is", $user['id'], $artistId);
+        $success = $stmt->execute();
+        return array("success" => $success, "message" => $success ? "Followed successfully" : "Error following", "following" => true);
+    }
+}
+
 $server = new rabbitMQServer("testRabbitMQ.ini", "notaweatherapp");
 $server->process_requests('requestProcessor');
+
 ?>

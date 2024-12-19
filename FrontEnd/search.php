@@ -26,11 +26,15 @@
                             <button onclick="fetchArtistStats()" class="btn btn-primary">Search</button>
                         </div>
                         <div id="stats" class="mt-4 alert alert-info text-center">Enter an artist name.</div>
+                        <div id="artist-suggestions" class="mt-5"></div>
+                        <div id="spotify-widget" class="mt-4"></div>       
                     </div>
                 </div>
             </div>
         </div>
     </main>
+
+    <?php include('footer.php');?>
 
     <!-- Bootstrap JS -->
     <script src="js/bootstrap.bundle.min.js"></script>

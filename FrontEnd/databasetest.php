@@ -40,7 +40,7 @@
 
                         foreach ($users as $row) {
                             echo '<tr>';
-                            echo '<td>' . htmlspecialchars($row['user_id']) . '</td>';
+                            echo '<td>' . htmlspecialchars($row['id']) . '</td>';
                             echo '<td>' . htmlspecialchars($row['username']) . '</td>';
                             echo '<td>' . htmlspecialchars($row['password']) . '</td>';
                             echo '</tr>';
