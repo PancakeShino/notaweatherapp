@@ -1,1 +1,2 @@
+sudo ufw default deny incoming
 sudo ufw allow from 172.28.30.37 to 172.28.245.79 port 80,443,5672, proto tcp
