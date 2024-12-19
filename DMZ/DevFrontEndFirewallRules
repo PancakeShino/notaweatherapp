@@ -4,8 +4,8 @@ sudo ufw default allow outgoing
 sudo ufw allow in proto tcp fron any to any port 443
 sudo ufw allow in proto tcp from any to any port 80
 
-sudo ufw allow proto tcp from any to 10.243.109.248 port 5672
-sudo ufw allow proto tcp from any to 10.243.109.248 port 15672
+sudo ufw allow proto tcp from any to 10.243.120.72 port 5672
+sudo ufw allow proto tcp from any to 10.243.120.72 port 15672
 
 sudo ufw allow out proto udp to 8.8.8.8 port 53
 
