@@ -79,12 +79,12 @@ async function fetchArtistDetails(artistId) {
 
         if (!response.ok) {
             console.error('Setlist.fm API error:', response.status);
-            // Try to get just Spotify data if setlist.fm fails
+
             const spotifyArtistId = await getArtistID(artistId);
             if (spotifyArtistId) {
                 const relatedArtists = await getRelatedArtists(spotifyArtistId);
                 return {
-                    name: artistId, // Fallback name
+                    name: artistId,
                     disambiguation: '',
                     relatedArtists,
                     spotifyArtistId
@@ -95,7 +95,7 @@ async function fetchArtistDetails(artistId) {
 
         const artistData = await response.json();
         
-        // Get Spotify recommendations
+        // spotify reccomendations
         try {
             const spotifyArtistId = await getArtistID(artistData.name);
             let relatedArtists = [];
@@ -105,7 +105,7 @@ async function fetchArtistDetails(artistId) {
             return { ...artistData, relatedArtists, spotifyArtistId };
         } catch (spotifyError) {
             console.error('Spotify API error:', spotifyError);
-            // Return artist data even if Spotify fails
+            // return artist data if Spotify fails
             return { ...artistData, relatedArtists: [], spotifyArtistId: null };
         }
     } catch (error) {
@@ -114,7 +114,6 @@ async function fetchArtistDetails(artistId) {
     }
 }
 
-// Update the error handling in fetchFollowedArtists
 async function fetchFollowedArtists() {
     const container = document.getElementById('followed-artists-list');
     

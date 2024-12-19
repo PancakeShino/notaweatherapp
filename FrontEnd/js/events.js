@@ -31,7 +31,6 @@ async function fetchArtistEvents() {
             </div>
         `;
 
-        // Add event listeners for "View on Map" buttons
         const mapButtons = document.querySelectorAll('.view-map-btn');
         mapButtons.forEach(button => {
             button.addEventListener('click', function () {

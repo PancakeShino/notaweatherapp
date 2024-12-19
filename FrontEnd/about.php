@@ -10,8 +10,8 @@
 <body>
     <?php include('header.php'); ?>
     <main class="container mt-5">
-        <h1>About us</h1>
-        <p> &emsp;Welcome to our project! Encorehub is our capstone project for IT490, Systems Integration, at NJIT. 
+        <h1>About Us</h1>
+        <p> &emsp;Welcome to Encorehub! This is our capstone project for IT490, Systems Integration, at NJIT. 
             It is a demonstration of the Setlist.fm API and RabbitMQ, designed to enhance the way fans engage with live music. 
             We have also integrated the TicketMaster and Spotify APIs to give more detailed information about past and upcoming shows for users, 
             while detailed maps enable users to see the date and exact location of the venue.
@@ -31,10 +31,10 @@
         </p>
 
         <ul>
-            <li>Nicholas M.- Front End Development (Apache/PHP/HTML/CSS)
-            <li>Andrew B.- Back End Integration (RabbitMQ)
-            <li>Michael H.- DMZ Integration (System Administration)
-            <li>Dominik R.- Database Architecture (MySQL)
+            <li>Nicholas M. - Front End Development (Apache/PHP/HTML/CSS)
+            <li>Andrew B. - Back End Integration (RabbitMQ)
+            <li>Michael H. - DMZ Integration (System Administration)
+            <li>Dominik R. - Database Architecture (MySQL/PHP/JS)
              
         </ul>
         <p>
